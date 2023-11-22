@@ -1,64 +1,228 @@
-#---------------------------------------------------#
-# 配置文件需要放置在 $HOME/.config/clash/config.yml
-# 或者运行目录下的config.yml
-#---------------------------------------------------#
-# 混合端口 HTTP和SOCKS5用一个端口
-mixed-port: 7890
-
-# HTTP 代理端口
-# port: 7890
-
-# SOCKS5 代理端口
-socks-port: 7891
-
-# Linux 和 macOS 的 redir 代理端口 (如需使用此功能，请取消注释)
-# redir-port: 7892
-
-# 允许局域网的连接（可用来共享代理）
+redir-port: 9797
+tproxy-port: 9898
+mode: rule
 allow-lan: true
+unified-delay: true
+bind-address: '*'
+# info / warning / error / debug / silent
+log-level: silent
+ipv6: false
+geodata-mode: true
+geodata-loader: memconservative
+external-controller: 0.0.0.0:9090 
+# external-controller-tls: 0.0.0.0:9091 # RESTful API HTTPS device
+# secret: "123456"
+external-ui: ./dashboard
+# tcp-concurrent: false
+# inbound-tfo: false
+# global-client-fingerprint: chrome
+# interface-name: "rmnet_data+"
+# routing-mark: 233
+geox-url:
+  mmdb: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country.mmdb"
+  geoip: "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geoip.dat"
+  geosite: "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat"
+find-process-mode: strict # always, strict, off
 
-# 仅在将allow-lan设置为true时适用
-# #"*": 绑定所有IP地址
-# #192.168.122.11: 绑定单个IPv4地址
-# #"[aaaa::a8aa:ff:fe09:57d8]": 绑定单个IPv6地址
-bind-address: "*"
-ipv6: true
+profile:
+  store-selected: true
+  store-fake-ip: false
 
-# 规则模式：rule（规则） / global（全局代理）/ direct（全局直连）/ script (脚本)
-# mode: rule
+# experimental:
+  # sniff-tls-sni: false
+  # udp-fallback-match: false
 
-# 设置日志输出级别 (默认级别：silent，即不输出任何内容，以避免因日志内容过大而导致程序内存溢出）。
-# 5 个级别：silent / error / warning / info / debug。级别越高日志输出量越大，越倾向于调试，若需要请自行开启。
-log-level: info
+# sniffer:
+  # enable: false
+  # ## 对 redir-host 类型识别的流量进行强制嗅探
+  # ## 如：Tun、Redir 和 TProxy 并 DNS 为 redir-host 皆属于
+  # force-dns-mapping: true
+  # parse-pure-ip: true
+  # override-destination: true
+  # sniff:
+    # TLS:
+    # #  ports:[443, 8443]
+    # HTTP:
+      # ports: [80, 8080-8880]
+      # override-destination: true
+  # force-domain:
+    # - +.v2ex.com
+  # # skip-domain:
+    # # - +.google.com
+  # sniffing:
+    # - tls
+    # - http
+  # port-whitelist:
+    # - "80"
+    # - "443"
 
-# Clash 的 RESTful API
-external-controller: '127.0.0.1:9090'
+# tun:
+  # enable: false
+  # # biarkan default utun
+  # device: utun
+  # mtu: 9000
+  # # gvisor / lwip / system
+  # stack: system
+  # dns-hijack:
+    # - any:53
+  # # bagi yg awam, kalau TUN on wajib true, only armv8/64
+  # auto-route: true
+  # auto-detect-interface: true
+  # # end
+  # inet4-address: 172.19.0.1/30
+  # inet6-address: [fdfe:dcba:9876::1/126]
+  # strict_route: false
+  # # include_android_user:
+  # # - 0
+  # # - 10
+  # # include_package:
+  # # - com.android.chrome
+  # # exclude_package:
+  # # - com.android.captiveportallogin
 
-# 您可以将静态网页资源（如 clash-dashboard）放置在一个目录中，clash 将会服务于 `RESTful API/ui`
-# 参数应填写配置目录的相对路径或绝对路径。
-# http://127.0.0.1:9090/ui/#/
-# external-ui: folder
-# yacd面板：  https://github.com/haishanh/yacd
-# Razord面板：http://clash.razord.top/#/proxies
-# external-ui: dashboard
+dns:
+  enable: true
+  ipv6: false
+  prefer-h3: true
+  default-nameserver:
+    # cloudflare
+    - '1.1.1.1#BFM'
+    # google
+    - '8.8.8.8'
+  listen: 0.0.0.0:1053
+  use-hosts: true
+  # redir-host / fake-ip
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  fake-ip-filter:
+    - '+.lan'
+  nameserver:
+    # cloudflare
+    - '1.1.1.1'
+    - 'tls://1.0.0.1:853#BFM'
+    # google
+    - '8.8.8.8#BFM'
+    - 'tls://8.8.4.4:853'
+  # proxy-server-nameserver:
+    # - '1.1.1.1'
+  # nameserver-policy: { "geosite:youtube": [1.1.1.1, 8.8.8.8] }
 
-# RESTful API 的口令 (可选)
-# secret: ""
+  fallback:
+    - 'https://8.8.8.8/dns-query'
+    - 'tcp://8.8.4.4'
+    - 'quic://dns.adguard.com:784'
+  fallback-filter:
+    geoip: false
+    geoip-code: '!ID'
+    geosite:
+      # - gfw
+    ipcidr:
+      # - 240.0.0.0/4
+    domain:
+      - '+.google.com'
+      - '+.facebook.com'
+      - '+.youtube.com'
+      - '+.github.com'
 
-# 实验性功能
-experimental:
-  ignore-resolve-fail: true # 忽略 DNS 解析失败，默认值为 true
-# Clash for Windows
-# Proxies module latency test settings
-cfw-latency-timeout: 3000
-cfw-latency-url: http://www.gstatic.com/generate_204
-cfw-conn-break-strategy:
-  proxy: none # none/chain/all
-  profile: true # true/false
-  mode: false # true/false
-cfw-proxies-order: default
-cfw-bypass-bak:
-  - <local>
-# 系统代理跳过列表 起作用的
-cfw-bypass:
-  - <local>
+hosts:
+  # block update system android
+  'ota.googlezip.net': 127.0.0.1
+  'ota-cache1.googlezip.net': 127.0.0.1
+  'ota-cache2.googlezip.net': 127.0.0.1
+
+###
+CONSTANT:
+ - gen204: &gen204 http://cp.cloudflare.com/generate_204
+ - intervalX: &intervalX 1200
+ - toleranceX: &toleranceX 50
+
+ - base_lb: &base_lb { type: load-balance, strategy: round-robin, url: *gen204, interval: *intervalX, tolerance: *toleranceX, disable-udp: false, url-test: { url: *gen204, interval: *intervalX, timeout: 5, success-code: 204 } }
+
+proxies:
+proxy-groups:
+  - { name: 'BFM', type: select, proxies: [ 📊 Auto, ⚖️ Balance, 🎯 Choose, ⛔ Dummy ], default: 📊 Auto }
+
+  # select: Manually select a policy to a final destination. 
+ - { name: 🎯 Choose, type: select, use: ["@BFM"] }
+ 
+# url-test: Auto select a policy to a final destination. 
+ - { name: 📊 Auto, type: url-test, url: *gen204, interval: *intervalX, use: ["@BFM"] }
+
+# load-balance: Different requests will go different proxies. 
+ - { name: ⚖️ Balance, <<: *base_lb, use: ["@BFM"] }
+
+# block - dummy
+ - { name: ⛔ Dummy, type: select, proxies: [ REJECT ] }
+ 
+  - { name: 'block', type: select, proxies: ["REJECT", "BFM"] }
+  - name: VC Whatsapp
+    type: select
+    disable-udp: false
+    proxies:
+      - DIRECT
+proxy-providers:
+  '@BFM':
+    type: file
+    path: ./provide/domestic.yml
+    # filter: 'xxx'  # Mendukung ekspresi reguler untuk memfilter berdasarkan nama node
+    # exclude-filter: 'ctb' # Mendukung ekspresi reguler untuk dikecualikan berdasarkan nama node
+    # exclude-type: 'ss|http' # Tidak mendukung ekspresi reguler, dipisahkan dengan '|', dikecualikan menurut jenis node
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 1200
+rules:
+  # VC Whatsapp
+  - DST-PORT,3478,VC Whatsapp
+  - DST-PORT,4244,VC Whatsapp
+  - DST-PORT,53, VC Whatsapp
+  - DST-PORT,40020,VC Whatsapp
+  - DST-PORT,57923,VC Whatsapp
+  - DST-PORT,22,DIRECT
+  - IP-CIDR,198.18.0.1/16,REJECT,no-resolve
+  
+  ## block ads
+  - DOMAIN-SUFFIX,googlesyndication.com,BFM
+
+  ## block iklan
+  # - AND,((GEOSITE,category-ads-all),(NOT,((DOMAIN-SUFFIX,googlesyndication.com)))),REJECT
+  - GEOSITE,category-ads-all,block
+
+  ## rules telegram
+  # - GEOIP,telegram,BFM
+
+  ## direct FCM
+  # - AND,((NETWORK,TCP),(DST-PORT,5228-5230),(OR,((DOMAIN-KEYWORD,google)))),DIRECT
+
+  ## direct ntp
+  # - AND,((NETWORK,UDP),(DST-PORT,123)),DIRECT
+  # - DST-PORT,123/136/137-139,DIRECT,udp
+
+  ## block udp/quic YouTube
+  - AND,((NETWORK,udp),(OR,((DST-PORT,443),(GEOSITE,youtube)))),block
+  # - AND,((NETWORK,udp),(GEOSITE,youtube)),REJECT
+
+  ## rules inner, recommended untuk non kuota reguler
+  # - AND,((PROCESS-NAME,clash),(NOT,((IN-TYPE,inner)))),REJECT
+  - IN-TYPE,inner,BFM
+  ## final
+  - MATCH,BFM
+
+## rules clash premium
+# rule-providers:
+  # block:
+    # type: http
+    # behavior: domain
+    # url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+    # path: ./ruleset/block.yaml
+    # interval: 86400
+# script:
+  # shortcuts:
+    # # quic: network == 'udp' and dst_port == 443
+    # youshit: network == 'udp' and ('youtube' in host or 'googlevideo' in host)
+# rules:
+  # - DOMAIN-SUFFIX,googlesyndication.com,BFM
+  # - RULE-SET,block,block
+  # # - SCRIPT,quic,block
+  # - SCRIPT,youshit,block
+  # - MATCH,BFM
